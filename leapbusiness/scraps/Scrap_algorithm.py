@@ -10,7 +10,7 @@ from leapbusiness.scraps.data_steamCharts import Data_steamCharts
 from leapbusiness.scraps.data_steamPriceHistory import Data_steamPriceHistory
 
 
-class Scrap_algoritms:
+class Scrap_algorithm:
 
     @staticmethod
     def scrap_metacritic(url):
