@@ -11,5 +11,6 @@ def create_app():
 
         app.register_blueprint(index_blueprint)
         app.register_blueprint(view_blueprint)
+        app.register_blueprint(start_blueprint)
 
     return app

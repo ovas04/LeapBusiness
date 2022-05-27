@@ -1,5 +1,5 @@
 from multiprocessing import context
-from flask import request, render_template
+from flask import jsonify, render_template
 from .extensions import *
 from services import videogame as Videogame
 
@@ -15,3 +15,9 @@ def view():
 
     context = {"title": videogame.getVideogame()}
     return render_template("view.html", **context)
+
+
+def start():
+    print("Start")
+    status = "Haciendo el web scrapping"
+    return jsonify(status=status)
