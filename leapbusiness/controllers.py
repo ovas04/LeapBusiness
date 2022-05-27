@@ -1,8 +1,8 @@
 from multiprocessing import context
 from flask import jsonify, render_template
 from .extensions import *
-from services import videogame as Videogame
-from scraps import Scrap_algorithm as Scrapping
+from services import Videogame
+from scraps import Scrap_algorithm
 
 
 def index():
@@ -12,7 +12,7 @@ def index():
 
 def view():
 
-    videogame = Videogame.videogame("GTAV")
+    videogame = Videogame.Videogame("GTAV")
 
     context = {"title": videogame.getVideogame()}
     return render_template("view.html", **context)
@@ -20,6 +20,6 @@ def view():
 
 def start():
     print("Start")
-    Scrapping.scrap_metacritic()
+    Scrap_algorithm.Scrap_algorithm.scrap_metacritic()
     status = "Haciendo el web scrapping"
     return jsonify(status=status)

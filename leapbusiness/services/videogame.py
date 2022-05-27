@@ -1,4 +1,4 @@
-class videogame:
+class Videogame:
     def __init__(self, videogame):
         self.videogame = videogame
 
