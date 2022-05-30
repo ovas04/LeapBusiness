@@ -5,10 +5,10 @@
 #           url = "https" + appIdList[i]
 #           get_steamSpy_data(url) : steamSpy class or array
 #           get_steamAPI_data(url) : steamAPI class or array
-#           get_metacritic_data(url) : metacritic class or array
-#           get_steamCharts_data(url) : steamCharts class or array
-#           get_steamHistory_data(url) : steamHistory class or array
-#
+#           get_metacritic_data(aux.url) : metacritic class or array
+#           get_steamCharts_data(i.appid) : steamCharts class or array
+#           get_steamHistory_data(i.appid) : steamHistory class or array
+#           print()
 #           update_database([data: class or array]) : true | false -> Success
 #
 

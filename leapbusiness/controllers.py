@@ -20,6 +20,6 @@ def view():
 
 def start():
     print("Start")
-    Scrap_algorithm.Scrap_algorithm.scrap_metacritic()
+# Scrap_algorithm.Scrap_algorithm.scrap_metacritic()
     status = "Haciendo el web scrapping"
     return jsonify(status=status)
