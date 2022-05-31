@@ -104,3 +104,29 @@ class Scrap_algorithm:
                 list_prices.append(Data_steamPriceHistory(date_price, price))
 
         return list_prices
+
+    @staticmethod
+    def get_followers(appId):
+    
+        url = ("https://steamspy.com/app/" + str(appId))  
+        
+        expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
+        
+        html = urlopen(expect_request).read()
+        
+        object_beautifulSoup =  BeautifulSoup(html,"lxml")
+        
+        data = object_beautifulSoup.select('div > div > div > p')[0].get_text()
+            
+        index = data.index("Followers") + 11
+        
+        total_followers = ""
+        
+        for i in range(index,len(data)):
+            
+            if((ord(data[i]) < 48 or ord(data[i]) > 57) and ord(data[i]) != 44):
+                break
+            else:
+                total_followers = total_followers+data[i]
+        
+        return int(total_followers.replace(",",""))
