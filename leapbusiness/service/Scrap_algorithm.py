@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from tracemalloc import Statistic
 from typing import final
 
-from .Data_metacritic import Data_metacritic
-from .Data_steamCharts import Data_steamCharts
-from .Data_steamPriceHistory import Data_steamPriceHistory
+from ..domain.Data_metacritic import Data_metacritic
+from ..domain.Data_steamCharts import Data_steamCharts
+from ..domain.Data_steamPriceHistory import Data_steamPriceHistory
 
 
 class Scrap_algorithm:
