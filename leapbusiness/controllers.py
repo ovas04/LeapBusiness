@@ -1,8 +1,9 @@
 from multiprocessing import context
+from sre_constants import SUCCESS
 from flask import jsonify, render_template
 from .extensions import *
 from services import Videogame
-from scraps import Scrap_algorithm
+from service import main
 
 
 def index():
@@ -19,7 +20,7 @@ def view():
 
 
 def start():
-    print("Start")
-# Scrap_algorithm.Scrap_algorithm.scrap_metacritic()
-    status = "Haciendo el web scrapping"
+    print("Start of process")
+    success = main()
+    status = "Realizando el web scrapping"
     return jsonify(status=status)
