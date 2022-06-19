@@ -12,7 +12,7 @@ from .Data_SteamCharts import DataSteamCharts
 import math
 
 
-@dataclass
+@dataclass(slots=True)
 class Game:
     # SteamSpy data
     appId: int

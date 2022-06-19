@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(slots=True)
 class DataMetacritic:
     metaScore: int
     userScore: float

@@ -22,10 +22,15 @@ from domain.Game import Game
 
 
 def main():
+    start = time.time()
     print("-------------------------------")
     print("Main")
-    # update_steamSpy_list()
+    update_steamSpy_list()
     update_data()
+    end = time.time()
+    print("-------------------------------")
+    print('Total time elapsed: ')
+    print(start-end)
     return True
 
 
@@ -46,7 +51,6 @@ def update_steamSpy_list():
             for item in items:
                 list.append(item)
             count += 1
-            print(count)
         except HTTPError as error:
             print("Error while updating steamSpy list")
             print(error.status, error.reason)
@@ -113,7 +117,6 @@ def update_game_data(appid):
     gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7], required_age=game[8],
                      is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=game[17])
     update_database(gameClass)
-    print(gameClass)
     return True
 
 
