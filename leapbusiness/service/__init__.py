@@ -25,8 +25,7 @@ def main():
     print("-------------------------------")
     print("Main")
     # update_steamSpy_list()
-    # update_data()
-    update_game_data(10)
+    update_data()
     return True
 
 
@@ -111,10 +110,8 @@ def update_game_data(appid):
         return False
     game.append(steamHistory_data)
 
-    print(len(game))
-
     gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7], required_age=game[8],
-                     is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], prices=game[16], players=game[17])
+                     is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=game[17])
     update_database(gameClass)
     print(gameClass)
     return True
@@ -193,7 +190,7 @@ def get_steamAPI_data(appid):
                     data.get('metacritic').get('url')))
             else:
                 steamAPI.append(data.get('metacritic'))
-                print('- Metacritic url not found')
+                print('- Metacritic data not found')
             print('- SteamAPI done')
             return steamAPI
         except HTTPError as error:
