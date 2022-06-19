@@ -1,14 +1,13 @@
-
-from sys import flags
+import time
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
-from tracemalloc import Statistic
 from typing import final
+from .Service_format import Service_format
 
-from domain import Data_metacritic
-from domain import Data_steamCharts
-from domain import Data_steamPriceHistory
+from domain.Data_Metacritic import DataMetacritic
+from domain.Data_SteamCharts import DataSteamCharts
+from domain.Data_SteamPriceHistory import DataSteamPriceHistory
 
 
 class Scrap_algorithm:
@@ -18,43 +17,58 @@ class Scrap_algorithm:
 
         expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
 
-        generes = []
+        genres = []
 
-        try:
-            html = urlopen(expect_request).read()
+        max_error_count = 10
 
-            object_beautifulSoup = BeautifulSoup(html, "lxml")
+        while(max_error_count > 0):
+            try:
+                html = urlopen(expect_request).read()
 
-            metaScore = object_beautifulSoup.select(
-                'div > div > div > div > a > div > span')[0].get_text()
+                object_beautifulSoup = BeautifulSoup(html, "lxml")
 
-            userScore = object_beautifulSoup.select(
-                ' div > div > div > div > div > div > a > div')[1].get_text()
+                metaScore = object_beautifulSoup.select(
+                    'div > div > div > div > a > div > span')[0].get_text()
 
-            data_generes = object_beautifulSoup.find(
-                'li', {"class": "summary_detail product_genre"})
+                userScore = object_beautifulSoup.select(
+                    ' div > div > div > div > div > div > a > div')[1].get_text()
 
-            data_generes = data_generes.findAll('span')
+                data_genres = object_beautifulSoup.find(
+                    'li', {"class": "summary_detail product_genre"})
 
-            for i in data_generes:
+                data_genres = data_genres.findAll('span')
 
-                if(generes.count(i.get_text()) == 0):
-                    generes.append(i.get_text())
+                for i in data_genres:
 
-            generes.pop(0)
+                    if(genres.count(i.get_text()) == 0):
+                        genres.append(i.get_text())
 
-            data_metacritic = Data_metacritic.Data_metacritic(
-                metaScore, userScore)
+                genres.pop(0)
+                metaScore = Service_format.metacritic_metaScore_to_number(
+                    metaScore)
+                userScore = Service_format.metacritic_userScore_to_number(
+                    userScore)
 
-            data_metacritic.setGeneres(generes)
-        except HTTPError as error:
-            print('Data not found in Metacritic')
-            return False
-        except URLError as error:
-            print(error.reason)
-            return False
+                data_metacritic = DataMetacritic(
+                    metaScore=metaScore, userScore=userScore, genres=genres)
 
-        return data_metacritic
+                print('- Metacritic done')
+
+                return data_metacritic
+            except HTTPError as error:
+                print('Data not found in Metacritic')
+                return False
+            except URLError as error:
+                print(error.reason)
+                return False
+            except:
+                print('No response, waiting 10 seconds...')
+                time.sleep(10)
+                max_error_count -= 1
+                print('Retrying...')
+
+        print('Data not found in Metacritic')
+        return None
 
     @staticmethod
     def scrap_steamCharts(appId):
@@ -65,33 +79,45 @@ class Scrap_algorithm:
 
         List_dates = []
 
-        try:
-            html = urlopen(expect_request).read()
-            object_beautifulSoup = BeautifulSoup(html, "lxml")
-            dates = object_beautifulSoup.findAll('tr', {"class": "odd"})
-            for row in dates:
+        max_error_count = 10
 
-                game_date = row.select("tr > td")[0].get_text().strip()
+        while(max_error_count > 0):
+            try:
+                html = urlopen(expect_request).read()
+                object_beautifulSoup = BeautifulSoup(html, "lxml")
+                dates = object_beautifulSoup.findAll('tr', {"class": "odd"})
+                for row in dates:
 
-                avg_players = row.select("tr > td")[1].get_text()
+                    game_date = row.select("tr > td")[0].get_text().strip()
 
-                peak_players = row.select("tr > td")[4].get_text()
+                    avg_players = row.select("tr > td")[1].get_text()
 
-                data = Data_steamCharts.Data_steamCharts(
-                    game_date, avg_players, peak_players)
+                    peak_players = row.select("tr > td")[4].get_text()
 
-                List_dates.append(data.getGameDate())
-                List_dates.append(data.getAvgPlayers())
-                List_dates.append(data.getPeakPlayers())
+                    avg_players = Service_format.from_str_to_float(avg_players)
+                    peak_players = Service_format.from_str_to_int(peak_players)
 
-        except HTTPError as error:
-            print('Data not found in SteamCharts')
-            return False
-        except URLError as error:
-            print(error.reason)
-            return False
+                    data = DataSteamCharts(avg_players=avg_players, peak_players=peak_players,
+                                           mounth=Service_format.format_date_SteamChart(game_date))
 
-        return List_dates
+                    List_dates.append(data)
+
+                return List_dates
+
+            except HTTPError as error:
+                print('Data not found in SteamCharts')
+                return False
+            except URLError as error:
+                print(error.reason)
+                return False
+            except:
+                print('No response, waiting 10 seconds...')
+                time.sleep(10)
+                max_error_count -= 1
+                print('Retrying...')
+
+        print('Data not found in SteamCharts')
+        return False
 
     @staticmethod
     def scrap_steamPrice(appId):
@@ -102,37 +128,52 @@ class Scrap_algorithm:
 
         list_prices = []
 
-        try:
-            html = urlopen(expect_request).read()
+        max_error_count = 10
 
-            object_beautifulSoup = BeautifulSoup(html, "lxml")
+        while(max_error_count > 0):
+            try:
+                html = urlopen(expect_request).read()
 
-            data_prices = object_beautifulSoup.findAll(
-                "table", {"class": "breakdown-table"})[0]
+                object_beautifulSoup = BeautifulSoup(html, "lxml")
 
-            data_prices = data_prices.findAll("tr")
+                data_prices = object_beautifulSoup.findAll(
+                    "table", {"class": "breakdown-table"})[0]
 
-            for data in data_prices:
+                data_prices = data_prices.findAll("tr")
 
-                if(len(data.select("th")) == 0):
+                for data in data_prices:
 
-                    date_price = data.select("tr > td")[0].get_text()
+                    if(len(data.select("th")) == 0):
 
-                    price = data.select("tr > td")[1].get_text()
+                        date_price = data.select("tr > td")[0].get_text()
 
-                    data = Data_steamPriceHistory.Data_steamPriceHistory(
-                        date_price, price)
+                        date_price = Service_format.format_date_SteamPrice(
+                            date_price)
 
-                    list_prices.append(data.get_date_price())
-                    list_prices.append(data.get_price())
-        except HTTPError as error:
-            print('Data not found in SteamPriceHistory')
-            return False
-        except URLError as error:
-            print(error.reason)
-            return False
+                        price = data.select("tr > td")[1].get_text()
 
-        return list_prices
+                        price = Service_format.steam_price_format_float(price)
+
+                        data = DataSteamPriceHistory(
+                            date_price=date_price, price=price)
+
+                        list_prices.append(data)
+
+                return list_prices
+            except HTTPError as error:
+                print('Data not found in SteamPriceHistory')
+                return False
+            except URLError as error:
+                print(error.reason)
+                return False
+            except:
+                print('No response, waiting 10 seconds...')
+                time.sleep(10)
+                max_error_count -= 1
+                print('Retrying...')
+
+        print('Data not found in SteamPrice')
+        return False
 
     @staticmethod
     def get_followers(appId):
@@ -143,27 +184,36 @@ class Scrap_algorithm:
 
         total_followers = ""
 
-        try:
-            html = urlopen(expect_request).read()
+        max_error_count = 10
 
-            object_beautifulSoup = BeautifulSoup(html, "lxml")
+        while(max_error_count > 0):
+            try:
+                html = urlopen(expect_request).read()
 
-            data = object_beautifulSoup.select(
-                'div > div > div > p')[0].get_text()
+                object_beautifulSoup = BeautifulSoup(html, "lxml")
 
-            index = data.index("Followers") + 11
+                data = object_beautifulSoup.select(
+                    'div > div > div > p')[0].get_text()
 
-            for i in range(index, len(data)):
+                index = data.index("Followers") + 11
 
-                if((ord(data[i]) < 48 or ord(data[i]) > 57) and ord(data[i]) != 44):
-                    break
-                else:
-                    total_followers = total_followers+data[i]
-        except HTTPError as error:
-            print('Followers not found in steamSpy')
-            return False
-        except URLError as error:
-            print(error.reason)
-            return False
+                for i in range(index, len(data)):
 
-        return int(total_followers.replace(",", ""))
+                    if((ord(data[i]) < 48 or ord(data[i]) > 57) and ord(data[i]) != 44):
+                        break
+                    else:
+                        total_followers = total_followers+data[i]
+                return int(total_followers.replace(",", ""))
+            except HTTPError as error:
+                print('Followers not found in steamSpy')
+                return False
+            except URLError as error:
+                print(error.reason)
+                return False
+            except:
+                print('No response, waiting 10 seconds...')
+                time.sleep(10)
+                max_error_count -= 1
+                print('Retrying...')
+
+        return None

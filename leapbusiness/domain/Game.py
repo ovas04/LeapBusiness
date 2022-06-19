@@ -1,30 +1,49 @@
-# main() : true | false -> Success
-#   update_steamSpy_list() : true | false -> Success
-#   update_data(appIdList: array) : true | false -> Success
-#       update_game_data(appid: appIdList[i]) : true | false -> Success
-#           url = "https" + appid
-#           get_steamSpy_data(appid) : steamSpy class or array
-#           get_steamAPI_data(appid) : steamAPI class or array
-#               get_metacritic_data(aux.url) : metacritic class or array
-#           get_steamCharts_data(appid) : steamCharts class or array
-#           get_steamHistory_data(appid) : steamHistory class or array
-#           print()
-#           update_database([data: class or array]) : true | false -> Success
-#
+from dataclasses import dataclass, field
+from datetime import date
+from .Tag import Tag
+from .Platform import Platform
+from .Category import Category
+from .Genre import Genre
+from .Data_Metacritic import DataMetacritic
+from .Data_SteamPriceHistory import DataSteamPriceHistory
+from .Data_SteamCharts import DataSteamCharts
 
+
+@dataclass
 class Game:
+    # SteamSpy data
+    appId: int
+    name: str
+    publisher: list[str]
+    positive: int
+    negative: int
+    languages: list[str]
+    tags: list[Tag]
+    followers: int
+    # SteamAPI data
+    required_age: str
+    is_free: bool
+    platforms: list[Platform]
+    url: str
+    categories: list[Category]
+    genres: list[Genre]
+    release_date: date  # format
+    # DataMetacritic
+    metacritic: DataMetacritic
+    # DataSteamPriceHistory
+    prices: list[DataSteamPriceHistory]
+    # DataSteamCharts
+    players: list[DataSteamCharts]
+    # Custom data or unmapped
+    total_recommendations: int = field(init=False)
+    minor_price: float = field(init=False)
+    upper_price: float = field(init=False)
+    mean_price: float = field(init=False)
+    total_sales: float = field(init=False)
 
-    def __init__(self):
-
-        self.data_metracritic = None
-        self.data_steamCharts = []
-        self.data_steamPriceHisoty = []
-
-    def set_data_metracritic(self, p_data_metracritic):
-        self.data_metracritic = p_data_metracritic
-
-    def set_data_steamCharts(self, p_data_steamCharts):
-        self.data_steamCharts = p_data_steamCharts
-
-    def set_data_steamPriceHisoty(self, p_data_steamPriceHisoty):
-        self.data_steamPriceHisoty = p_data_steamPriceHisoty
+    def __post_init__(self) -> None:
+        self.total_recommendations = self.positive + self.negative
+        self.minor_price = 1
+        self.upper_price = 1
+        self.mean_price = 1
+        self.total_sales = 1
