@@ -161,8 +161,11 @@ class Scrap_algorithm:
 
                 return list_prices
             except HTTPError as error:
+                
                 print('Data not found in SteamPriceHistory')
+
                 return False
+
             except URLError as error:
                 print(error.reason)
                 return False
@@ -174,6 +177,57 @@ class Scrap_algorithm:
 
         print('Data not found in SteamPrice')
         return False
+
+
+    @staticmethod
+    def get_mean_price_steamSpy(appid):
+
+        try:
+            print("Searching in SteamSpy")
+
+            url = ("https://steamspy.com/app/" + str(appid))  
+    
+            expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
+                
+            html = urlopen(expect_request).read()
+                
+            object_beautifulSoup =  BeautifulSoup(html,"lxml")
+                
+            data = object_beautifulSoup.select('div > div > div > p')[0].get_text()
+            
+            try:
+                if(data.index("Free to Play") > 0):
+                
+                    return 0.0
+
+            except ValueError:
+
+                print("Doesn't is Free To Play")
+
+            index = data.index("Price") + 8
+                
+            mean_price = ""
+                
+            for i in range(index,len(data)):
+                    
+                if((ord(data[i]) < 48 or ord(data[i]) > 57) and ord(data[i]) != 46):
+                    break
+                else:
+                     mean_price = mean_price+data[i]
+                        
+        except HTTPError as error:
+            
+            print("Price not found in SteamSpy")
+
+            return False
+
+        except URLError as error:
+
+            print(error.reason)
+            return False
+
+        return float(mean_price)
+
 
     @staticmethod
     def get_followers(appId):
@@ -217,3 +271,5 @@ class Scrap_algorithm:
                 print('Retrying...')
 
         return None
+
+    

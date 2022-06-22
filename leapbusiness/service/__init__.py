@@ -5,6 +5,8 @@ from urllib.request import urlopen
 from .Scrap_algorithm import Scrap_algorithm
 from .Service_format import Service_format
 from domain.Game import Game
+import psycopg2
+
 
 # main() : true | false -> Success
 #   update_steamSpy_list() : true | false -> Success
@@ -25,7 +27,7 @@ def main():
     start = time.time()
     print("-------------------------------")
     print("Main")
-    update_steamSpy_list()
+    #update_steamSpy_list()
     update_data()
     end = time.time()
     print("-------------------------------")
@@ -226,6 +228,7 @@ def get_steamCharts_data(appid):
 def get_steamHistory_data(appid):
     data_steamHistory = Scrap_algorithm.scrap_steamPrice(appid)
     if(data_steamHistory == False):
+
         return None
 
     print('- SteamHistory done')
@@ -234,4 +237,43 @@ def get_steamHistory_data(appid):
 
 
 def update_database(game):
-    print("Ready to save in DB!")
+
+    print(game)
+
+    hostname = 'localhost'
+    database = 'db_leapbusiness'
+    username = '***'
+    pwd = '***'
+    port_id = 5432
+
+
+    conn = psycopg2.connect(
+            host = hostname,
+            dbname = database,
+            user = username,
+            password= pwd,
+            port = port_id )
+
+
+    my_cursor = conn.cursor()
+    
+    #Validations-----------------
+
+
+    print(type(game.name))
+    #-----------------------------
+
+    my_cursor.execute(" call leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+        (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date,
+        game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
+
+    '''
+        CALL leapbusiness.sp_register_update_videogame(:p_appid,:p_description,:p_total_recomendations,:p_required_age,:p_is_free,:p_followers,:p_url_metacritic,:p_relase_date,:p_minor_price,:p_upper_price,:p_mean_price,:p_user_score,:p_metascore,:p_total_sales);
+    '''
+
+
+    conn.commit()
+
+    conn.close()
+
+
