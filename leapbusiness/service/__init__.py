@@ -238,12 +238,12 @@ def get_steamHistory_data(appid):
 
 def update_database(game):
 
-    print(game)
+    #print(game)
 
     hostname = 'localhost'
     database = 'db_leapbusiness'
-    username = '***'
-    pwd = '***'
+    username = 'postgres'
+    pwd = 'Idranoide11'
     port_id = 5432
 
 
@@ -260,20 +260,82 @@ def update_database(game):
     #Validations-----------------
 
 
-    print(type(game.name))
     #-----------------------------
-
+    
     my_cursor.execute(" call leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
         (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date,
         game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
 
-    '''
-        CALL leapbusiness.sp_register_update_videogame(:p_appid,:p_description,:p_total_recomendations,:p_required_age,:p_is_free,:p_followers,:p_url_metacritic,:p_relase_date,:p_minor_price,:p_upper_price,:p_mean_price,:p_user_score,:p_metascore,:p_total_sales);
-    '''
-
 
     conn.commit()
 
+
+    for category in game.categories:
+         my_cursor.execute("CALL leapbusiness.sp_register_categories(%s,%s,%s)",(
+                               game.appId, category.id, category.desc))
+         
+
+    conn.commit()
+
+    
+    for genre in game.genres:
+         my_cursor.execute("CALL leapbusiness.sp_register_genre(%s,%s,%s)",(
+                                game.appId, genre.id, genre.desc))   
+
+    conn.commit()
+
+     
+
+    for tag in game.tags:
+         my_cursor.execute("CALL leapbusiness.sp_register_tags(%s,%s,%s)",(
+                                game.appId, tag.id, tag.desc))   
+
+    conn.commit()
+
+    for language in game.languages:
+         my_cursor.execute("CALL leapbusiness.sp_register_game_language( %s, %s)",(
+                                game.appId, language))   
+
+    conn.commit()
+
+
+    for platform in game.platforms:
+
+        if(platform.state == True):
+
+            my_cursor.execute("CALL leapbusiness.sp_register_platforms( %s, %s)",(
+                            game.appId, platform.desc))   
+
+    conn.commit()
+
+
+    for publisher in game.publisher:
+         my_cursor.execute("CALL leapbusiness.sp_register_publishers( %s, %s)",(
+                                game.appId, publisher))   
+
+    conn.commit()
+
+    my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
+                                game.appId, "positive", game.positive))   
+
+    conn.commit()
+
+
+    my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
+                                game.appId, "negative", game.negative))   
+
+    conn.commit()
+
+    if(game.metacritic.genres != None):    
+
+        for genre_user in game.metacritic.genres:
+            my_cursor.execute("CALL leapbusiness.sp_register_genre_user( %s, %s)",(
+                                    game.appId, genre_user))   
+
+        conn.commit()
+
+
     conn.close()
+
 
 
