@@ -85,7 +85,10 @@ class Scrap_algorithm:
             try:
                 html = urlopen(expect_request).read()
                 object_beautifulSoup = BeautifulSoup(html, "lxml")
-                dates = object_beautifulSoup.findAll('tr', {"class": "odd"})
+                dates = object_beautifulSoup.findAll('tr')
+
+                dates.pop(0)
+
                 for row in dates:
 
                     game_date = row.select("tr > td")[0].get_text().strip()

@@ -2,6 +2,9 @@ import json
 import time
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
+from flask import g
+
+from numpy import empty
 from .Scrap_algorithm import Scrap_algorithm
 from .Service_format import Service_format
 from domain.Game import Game
@@ -238,11 +241,9 @@ def get_steamHistory_data(appid):
 
 def update_database(game):
 
-    #print(game)
-
     hostname = 'localhost'
-    database = 'db_leapbusiness'
-    username = 'postgres'
+    database = '**'
+    username = '**'
     pwd = 'Idranoide11'
     port_id = 5432
 
@@ -261,7 +262,7 @@ def update_database(game):
 
 
     #-----------------------------
-    
+  
     my_cursor.execute(" call leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
         (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date,
         game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
@@ -333,6 +334,25 @@ def update_database(game):
                                     game.appId, genre_user))   
 
         conn.commit()
+    
+
+
+    if(bool(game.prices) != False):
+        
+        for price in game.prices:
+            my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                        (game.appId, price.date_price, price.price))
+
+            conn.commit()
+
+
+    if(bool(game.players) != False and 1 == 0):
+        
+        for players_data in game.players:
+            my_cursor.execute("CALL leapbusiness.sp_register_current_players(%s,%s,%s,%s)",
+                    (game.appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
+
+            conn.commit()
 
 
     conn.close()
