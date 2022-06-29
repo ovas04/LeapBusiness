@@ -19,7 +19,7 @@ class Scrap_algorithm:
 
         genres = []
 
-        max_error_count = 10
+        max_error_count = 3
 
         while(max_error_count > 0):
             try:
@@ -79,7 +79,7 @@ class Scrap_algorithm:
 
         List_dates = []
 
-        max_error_count = 10
+        max_error_count = 3
 
         while(max_error_count > 0):
             try:
@@ -131,7 +131,7 @@ class Scrap_algorithm:
 
         list_prices = []
 
-        max_error_count = 10
+        max_error_count = 3
 
         while(max_error_count > 0):
             try:
@@ -207,7 +207,15 @@ class Scrap_algorithm:
 
                 print("Doesn't is Free To Play")
 
-            index = data.index("Price") + 8
+            try: 
+                index = data.index("Price:") + 8
+
+            except ValueError:
+
+                print("there isn't price")
+
+                return 0.0
+
                 
             mean_price = ""
                 
@@ -229,6 +237,7 @@ class Scrap_algorithm:
             print(error.reason)
             return False
 
+
         return float(mean_price)
 
 
@@ -241,7 +250,7 @@ class Scrap_algorithm:
 
         total_followers = ""
 
-        max_error_count = 10
+        max_error_count = 3
 
         while(max_error_count > 0):
             try:
