@@ -1,3 +1,4 @@
+from cmath import exp
 import time
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, Request
@@ -129,9 +130,19 @@ class Scrap_algorithm:
 
         expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
 
+        try:
+            html = urlopen(expect_request).read()
+        except HTTPError:
+            try:
+                url = "https://web.archive.org/web/20220314123108/https://steampricehistory.com/app/" + str(appId)
+                expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
+                html = urlopen(expect_request).read()
+            except HTTPError:
+                url = ("https://steampricehistory.com/app/" + str(appId))
+
         list_prices = []
 
-        max_error_count = 3
+        max_error_count = 1
 
         while(max_error_count > 0):
             try:
@@ -161,7 +172,6 @@ class Scrap_algorithm:
                             date_price=date_price, price=price)
 
                         list_prices.append(data)
-
                 return list_prices
             except HTTPError as error:
                 

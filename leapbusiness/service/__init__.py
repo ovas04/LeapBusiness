@@ -1,11 +1,14 @@
 import json
 from statistics import mean
 import time
+from tkinter.messagebox import NO
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 from flask import g
 
 from numpy import empty
+
+from leapbusiness.domain.Data_Metacritic import DataMetacritic
 from .Scrap_algorithm import Scrap_algorithm
 from .Service_format import Service_format
 from domain.Game import Game
@@ -26,10 +29,10 @@ import psycopg2
 #           update_database(game class) : true | false -> Success
 #
 
-total_games = 0
-total_fallos = 0
+
 
 def main():
+
     start = time.time()
     print("-------------------------------")
     print("Main")
@@ -39,6 +42,8 @@ def main():
     print("-------------------------------")
     print('Total time elapsed: ')
     print(start-end)
+    print("Total Juegos registrados: " + str(Game.TOTAL_GAMES))
+    print("Total Juegos Fallados: " + str(Game.TOTAL_FALLOS))
     return True
 
 
@@ -119,10 +124,13 @@ def update_game_data(appid):
         return False
     game.append(steamCharts_data)
 
-    #steamHistory_data = get_steamHistory_data(appid)
-    #if(steamHistory_data == False):
-    #    return False
-    #game.append(steamHistory_data)
+    steamHistory_data = get_steamHistory_data(appid)
+    if(steamHistory_data == False):
+       return False
+    game.append(steamHistory_data)
+
+
+
 
     gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7], required_age=game[8],
                      is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=None)#, prices=game[17])
@@ -245,6 +253,147 @@ def get_steamHistory_data(appid):
 
 def update_database(game):
 
+    #Validations-----------------
+
+    #-----------------------------
+  
+    print("GAME METACRITIC = " + str(game.metacritic))
+    print("IS FREE : " + str(game.is_free))
+    print("FOLLOWERS : " + str(game.followers))
+    print("MEAN_PRICE : " + str(game.mean_price))
+    print("URL_METACRITIC : " + str(game.url))
+
+    if(game.metacritic == False):
+        game.metacritic = DataMetacritic(None, None, None)
+
+    """
+    if(game.is_free == False and game.followers > 200 and game.mean_price > 0 ):
+
+        register_game_db(game)
+ 
+    else:
+        Game.TOTAL_FALLOS = Game.TOTAL_FALLOS + 1
+        print("Not registered")"""
+
+        
+
+
+
+
+
+def register_game_db(game):
+
+    
+    hostname = 'localhost'
+    database = 'db_leapbusiness'
+    username = 'postgres'
+    pwd = 'Idranoide11'
+    port_id = 5432
+
+    conn = psycopg2.connect(
+            host = hostname,
+            dbname = database,
+            user = username,
+            password= pwd,
+            port = port_id )
+    
+    my_cursor = conn.cursor()
+    
+    my_cursor.execute("CALL leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date, game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
+
+
+    conn.commit()
+
+
+    for category in game.categories:
+        my_cursor.execute("CALL leapbusiness.sp_register_categories(%s,%s,%s)",(
+                            game.appId, category.id, category.desc))
+            
+
+    conn.commit()
+
+        
+    for genre in game.genres:
+        my_cursor.execute("CALL leapbusiness.sp_register_genre(%s,%s,%s)",(
+                            game.appId, genre.id, genre.desc))   
+
+    conn.commit()
+
+    for tag in game.tags:
+        my_cursor.execute("CALL leapbusiness.sp_register_tags(%s,%s,%s)",(
+                                game.appId, tag.id, tag.desc))   
+
+    conn.commit()
+
+    for language in game.languages:
+        my_cursor.execute("CALL leapbusiness.sp_register_game_language( %s, %s)",(
+                                game.appId, language))   
+
+    conn.commit()
+
+
+    for platform in game.platforms:
+
+        if(platform.state == True):
+
+            my_cursor.execute("CALL leapbusiness.sp_register_platforms( %s, %s)",(
+                            game.appId, platform.desc))   
+
+        conn.commit()
+
+
+    for publisher in game.publisher:
+        my_cursor.execute("CALL leapbusiness.sp_register_publishers( %s, %s)",(
+                                game.appId, publisher))   
+
+    conn.commit()
+
+    my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
+                                game.appId, "positive", game.positive))   
+
+    conn.commit()
+
+
+    my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
+                                game.appId, "negative", game.negative))   
+
+    conn.commit()
+
+    if(game.metacritic.genres != None):    
+
+        for genre_user in game.metacritic.genres:
+            my_cursor.execute("CALL leapbusiness.sp_register_genre_user( %s, %s)",(
+                                    game.appId, genre_user))   
+
+        conn.commit()
+  
+    if(bool(game.prices) != False):
+            
+        for price in game.prices:
+            my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                        (game.appId, price.date_price, price.price))
+
+        conn.commit()
+
+
+    if(bool(game.players) != False):
+            
+        for players_data in game.players:
+            my_cursor.execute("CALL leapbusiness.sp_register_current_players(%s,%s,%s,%s)",
+                    (game.appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
+
+        conn.commit()
+
+    Game.TOTAL_GAMES = Game.TOTAL_GAMES + 1
+    print("Registered in database")
+
+
+    conn.close()
+    
+
+def register_prices_db(game):
+
     hostname = 'localhost'
     database = 'db_leapbusiness'
     username = 'postgres'
@@ -259,121 +408,76 @@ def update_database(game):
             password= pwd,
             port = port_id )
 
+    my_cursor = conn.cursor() 
 
-    my_cursor = conn.cursor()
+    if(bool(game.prices) != False):
+            
+        for price in game.prices:
+            my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                        (game.appId, price.date_price, price.price))
+
+        conn.commit()
     
-    #Validations-----------------
-
-    #-----------------------------
-  
-    print(game.metacritic)
-    print(game.is_free)
-    print(game.followers)
-    print(game.mean_price)
-
-    if(game.is_free == False and game.followers > 200 and game.mean_price > 0):
-
-        my_cursor.execute("CALL leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date,
-            game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
-
-
-        conn.commit()
-
-
-        for category in game.categories:
-            my_cursor.execute("CALL leapbusiness.sp_register_categories(%s,%s,%s)",(
-                                game.appId, category.id, category.desc))
-            
-
-        conn.commit()
-
-        
-        for genre in game.genres:
-            my_cursor.execute("CALL leapbusiness.sp_register_genre(%s,%s,%s)",(
-                                    game.appId, genre.id, genre.desc))   
-
-        conn.commit()
-
-        
-
-        for tag in game.tags:
-            my_cursor.execute("CALL leapbusiness.sp_register_tags(%s,%s,%s)",(
-                                    game.appId, tag.id, tag.desc))   
-
-        conn.commit()
-
-        for language in game.languages:
-            my_cursor.execute("CALL leapbusiness.sp_register_game_language( %s, %s)",(
-                                    game.appId, language))   
-
-        conn.commit()
-
-
-        for platform in game.platforms:
-
-            if(platform.state == True):
-
-                my_cursor.execute("CALL leapbusiness.sp_register_platforms( %s, %s)",(
-                                game.appId, platform.desc))   
-
-        conn.commit()
-
-
-        for publisher in game.publisher:
-            my_cursor.execute("CALL leapbusiness.sp_register_publishers( %s, %s)",(
-                                    game.appId, publisher))   
-
-        conn.commit()
-
-        my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
-                                    game.appId, "positive", game.positive))   
-
-        conn.commit()
-
-
-        my_cursor.execute("CALL leapbusiness.sp_register_recomendations( %s, %s, %s)",(
-                                    game.appId, "negative", game.negative))   
-
-        conn.commit()
-
-        if(game.metacritic.genres != None):    
-
-            for genre_user in game.metacritic.genres:
-                my_cursor.execute("CALL leapbusiness.sp_register_genre_user( %s, %s)",(
-                                        game.appId, genre_user))   
-
-            conn.commit()
-        
-
-
-        if(bool(game.prices) != False):
-            
-            for price in game.prices:
-                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
-                            (game.appId, price.date_price, price.price))
-
-                conn.commit()
-
-
-        if(bool(game.players) != False):
-            
-            for players_data in game.players:
-                my_cursor.execute("CALL leapbusiness.sp_register_current_players(%s,%s,%s,%s)",
-                        (game.appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
-
-                conn.commit()
-
-        print("Registered in database")
-    
-    else:
-
-        print("Not registered")
-
-        
-
-
     conn.close()
 
 
 
+def register_players_db(game):
+
+    hostname = 'localhost'
+    database = 'db_leapbusiness'
+    username = 'postgres'
+    pwd = 'Idranoide11'
+    port_id = 5432
+
+
+    conn = psycopg2.connect(
+            host = hostname,
+            dbname = database,
+            user = username,
+            password= pwd,
+            port = port_id )
+
+    my_cursor = conn.cursor() 
+
+    if(bool(game.players) != False):
+            
+        for players_data in game.players:
+            my_cursor.execute("CALL leapbusiness.sp_register_current_players(%s,%s,%s,%s)",
+                    (game.appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
+
+        conn.commit()
+
+
+def register_metacritic_db(game):
+
+    hostname = 'localhost'
+    database = 'db_leapbusiness'
+    username = 'postgres'
+    pwd = 'Idranoide11'
+    port_id = 5432
+
+    conn = psycopg2.connect(
+            host = hostname,
+            dbname = database,
+            user = username,
+            password= pwd,
+            port = port_id )
+
+    my_cursor = conn.cursor() 
+
+    my_cursor.execute("CALL leapbusiness.sp_register_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+        (int(game.appId),str(game.name),game.total_recommendations, str(game.required_age), bool(game.is_free), game.followers, game.url,game.release_date, game.lower_price, game.upper_price,game.mean_price, game.metacritic.userScore, game.metacritic.metaScore, game.total_sales))
+
+
+    conn.commit()
+
+    if(game.metacritic.genres != None):
+
+        for genre_user in game.metacritic.genres:
+            my_cursor.execute("CALL leapbusiness.sp_register_genre_user( %s, %s)",(
+                                    game.appId, genre_user))   
+     
+    conn.commit()
+
+    conn.close()

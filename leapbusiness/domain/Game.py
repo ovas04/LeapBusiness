@@ -17,6 +17,10 @@ import math
 
 @dataclass(slots=True)
 class Game:
+
+    TOTAL_GAMES = 0
+    TOTAL_FALLOS = 0
+
     # SteamSpy data
     appId: int
     name: str
