@@ -512,38 +512,7 @@ def update_steamCharts(list_appId):
     print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
 
 
-def update_steamPrice(list_appId):
 
-    TOTAL_GAMES_UPDATED = 0
-
-    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
-
-    my_cursor = conn.cursor() 
-
-    for appId in list_appId :
-
-        steamHistory_data = get_steamHistory_data(appId)
-
-        if(steamHistory_data == False):
-
-            print("FALLO EN RECUPERAR DATOS DE : " + str(appId))
-
-            continue
-
-
-        if(bool(steamHistory_data) != False):
-                
-            for price in steamHistory_data:
-
-                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
-                            (appId, price.date_price, price.price))
-
-                conn.commit()
-
-            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
-
-
-    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
         
 
 
@@ -575,16 +544,17 @@ def update_steamPrice(list_appId):
                                    
                 conn.commit()
 
-            game = Game(appId=appId,prices=steamHistory_data)
-            
-            my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
-                            (appId, game.lower_price, game.mean_price, game.upper_price))
+                game = Game(appId=appId,prices=steamHistory_data)
+                
+                my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
+                                (appId, game.lower_price, game.mean_price, game.upper_price))
+
+                conn.commit()
+
+                TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
 
 
-            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
-
-
-    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
+        print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
 
         
 
@@ -606,7 +576,7 @@ def update_metacritic(list_appId):
         if(game.metacritic == False):
             game.metacritic = DataMetacritic(None, None, None)
     
-        my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s)",
+        my_cursor.execute("CALL leapbusiness.sp_update_metacritic_videogame(%s,%s,%s)",
                     (appId, game.metacritic.userScore, game.metacritic.metaScore)) 
 
         conn.commit()
@@ -624,18 +594,43 @@ def update_metacritic(list_appId):
     print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
   
 
-"""def update_game(list_appId):    
+def update_game(list_appId):    
+
+    TOTAL_GAMES_UPDATED = 0
+
+    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
+
+    my_cursor = conn.cursor() 
+  
 
     for appId in list_appId :
 
+        game = []
 
-    steamSpy_data = get_steamSpy_data(appid)
-    if(steamSpy_data == False):
-        return False
-    game += steamSpy_data
+        steamSpy_data = get_steamSpy_data(appId)
 
-    steamAPI_data = get_steamAPI_data(appid)
-    if(steamAPI_data == False):
-        return False
-    game += steamAPI_data"""
+        if(steamSpy_data == False):
+            continue
+        game += steamSpy_data
+
+        steamAPI_data = get_steamAPI_data(appId)
+
+        if(steamAPI_data == False):
+            continue
+        game += steamAPI_data
+
+        gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7], required_age=game[8], is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14])
+
+        if(game.is_free == False and game.followers > 1000 and game.mean_price > 0 ):
+
+            my_cursor.execute("CALL leapbusiness.sp_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (int(gameClass.appId),str(gameClass.name),gameClass.total_recommendations, str(gameClass.required_age), bool(gameClass.is_free), gameClass.followers, gameClass.url, gameClass.release_date))
+
+            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+            
+            conn.commit()
+
+    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))        
+
+
 
