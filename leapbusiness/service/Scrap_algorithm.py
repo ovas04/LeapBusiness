@@ -135,9 +135,13 @@ class Scrap_algorithm:
         except HTTPError:
             try:
                 url = "https://web.archive.org/web/20220314123108/https://steampricehistory.com/app/" + str(appId)
+
                 expect_request = Request(url, headers={'User-Agent': '  Mozilla/5.0'})
+
                 html = urlopen(expect_request).read()
+
             except HTTPError:
+                
                 url = ("https://steampricehistory.com/app/" + str(appId))
 
         list_prices = []

@@ -1,4 +1,6 @@
+from hashlib import new
 import json
+from re import A
 from statistics import mean
 import time
 from tkinter.messagebox import NO
@@ -129,11 +131,8 @@ def update_game_data(appid):
        return False
     game.append(steamHistory_data)
 
-
-
-
     gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7], required_age=game[8],
-                     is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=None)#, prices=game[17])
+                     is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=game[17])
     update_database(gameClass)
     return True
 
@@ -249,37 +248,6 @@ def get_steamHistory_data(appid):
     print('- SteamHistory done')
 
     return data_steamHistory
-
-
-def update_database(game):
-
-    #Validations-----------------
-
-    #-----------------------------
-  
-    print("GAME METACRITIC = " + str(game.metacritic))
-    print("IS FREE : " + str(game.is_free))
-    print("FOLLOWERS : " + str(game.followers))
-    print("MEAN_PRICE : " + str(game.mean_price))
-    print("URL_METACRITIC : " + str(game.url))
-
-    if(game.metacritic == False):
-        game.metacritic = DataMetacritic(None, None, None)
-
-    """
-    if(game.is_free == False and game.followers > 200 and game.mean_price > 0 ):
-
-        register_game_db(game)
- 
-    else:
-        Game.TOTAL_FALLOS = Game.TOTAL_FALLOS + 1
-        print("Not registered")"""
-
-        
-
-
-
-
 
 def register_game_db(game):
 
@@ -397,7 +365,7 @@ def register_prices_db(game):
     hostname = 'localhost'
     database = 'db_leapbusiness'
     username = 'postgres'
-    pwd = 'Idranoide11'
+    pwd = '***'
     port_id = 5432
 
 
@@ -481,3 +449,193 @@ def register_metacritic_db(game):
     conn.commit()
 
     conn.close()
+
+
+def update_database(game):
+
+    #Validations-----------------
+
+    #-----------------------------
+  
+    print("GAME METACRITIC = " + str(game.metacritic))
+    print("IS FREE : " + str(game.is_free))
+    print("FOLLOWERS : " + str(game.followers))
+    print("MEAN_PRICE : " + str(game.mean_price))
+    print("URL_METACRITIC : " + str(game.url))
+
+    if(game.metacritic == False):
+        game.metacritic = DataMetacritic(None, None, None)
+
+  
+    if(game.is_free == False and game.followers > 200 and game.mean_price > 0 ):
+
+        register_game_db(game)
+ 
+    else:
+        Game.TOTAL_FALLOS = Game.TOTAL_FALLOS + 1
+        print("Not registered")
+
+
+ #! CAMBIO DE BOTONES ------------------------------------------------------  
+
+def update_steamCharts(list_appId):
+
+    TOTAL_GAMES_UPDATED = 0
+
+
+    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
+
+    my_cursor = conn.cursor() 
+
+    for appId in list_appId :
+
+        steamCharts_data = get_steamCharts_data(appId)
+        
+        if(steamCharts_data == False):
+            
+            print("FALLO EN RECUPERAR DATOS DE : " + str(appId))
+
+            continue
+
+        if(bool(steamCharts_data) != False):
+            
+            for players_data in steamCharts_data:
+                
+                my_cursor.execute("CALL leapbusiness.sp_register_current_players(%s,%s,%s,%s)",
+                        (appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
+                        
+                conn.commit()
+
+                TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+
+
+    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
+
+
+def update_steamPrice(list_appId):
+
+    TOTAL_GAMES_UPDATED = 0
+
+    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
+
+    my_cursor = conn.cursor() 
+
+    for appId in list_appId :
+
+        steamHistory_data = get_steamHistory_data(appId)
+
+        if(steamHistory_data == False):
+
+            print("FALLO EN RECUPERAR DATOS DE : " + str(appId))
+
+            continue
+
+
+        if(bool(steamHistory_data) != False):
+                
+            for price in steamHistory_data:
+
+                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                            (appId, price.date_price, price.price))
+
+                conn.commit()
+
+            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+
+
+    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
+        
+
+
+def update_steamPrice(list_appId):
+
+    TOTAL_GAMES_UPDATED = 0
+
+    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
+
+    my_cursor = conn.cursor() 
+
+    for appId in list_appId :
+
+        steamHistory_data = get_steamHistory_data(appId)
+
+        if(steamHistory_data == False):
+
+            print("FALLO EN RECUPERAR DATOS DE : " + str(appId))
+
+            continue
+
+
+        if(bool(steamHistory_data) != False):
+                
+            for price in steamHistory_data:
+
+                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                            (appId, price.date_price, price.price))
+                                   
+                conn.commit()
+
+            game = Game(appId=appId,prices=steamHistory_data)
+            
+            my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
+                            (appId, game.lower_price, game.mean_price, game.upper_price))
+
+
+            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+
+
+    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
+
+        
+
+   
+def update_metacritic(list_appId):    
+
+    TOTAL_GAMES_UPDATED = 0
+
+    #TODO INSERTAR CODIGO DE CONNEXION A BASE DE DATOS
+
+    my_cursor = conn.cursor() 
+  
+
+    for appId in list_appId :
+        
+        game = Game(appId=appId)
+
+
+        if(game.metacritic == False):
+            game.metacritic = DataMetacritic(None, None, None)
+    
+        my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s)",
+                    (appId, game.metacritic.userScore, game.metacritic.metaScore)) 
+
+        conn.commit()
+
+        if(game.metacritic.genres != None):    
+
+            for genre_user in game.metacritic.genres:
+                my_cursor.execute("CALL leapbusiness.sp_register_genre_user( %s, %s)",(
+                                        game.appId, genre_user))   
+
+            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+            
+            conn.commit()
+
+    print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " + str(TOTAL_GAMES_UPDATED))
+  
+
+"""def update_game(list_appId):    
+
+    for appId in list_appId :
+
+
+    steamSpy_data = get_steamSpy_data(appid)
+    if(steamSpy_data == False):
+        return False
+    game += steamSpy_data
+
+    steamAPI_data = get_steamAPI_data(appid)
+    if(steamAPI_data == False):
+        return False
+    game += steamAPI_data"""
+
