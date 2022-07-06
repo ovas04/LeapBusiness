@@ -103,6 +103,7 @@ def update_data():
         if (result):
 
             print('-----END PROCESS GAME------- \n')
+            print('Juegos registrados por el momendo:  ' + str(Game.TOTAL_GAMES))
 
     return True
 
@@ -415,6 +416,8 @@ def register_players_db(game):
                     (game.appId, players_data.mounth, players_data.avg_players, players_data.avg_players))
 
         conn.commit()
+
+    conn.close()
 
 
 def register_metacritic_db(game):
