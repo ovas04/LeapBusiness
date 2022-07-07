@@ -70,3 +70,21 @@ body{
 .page .content button:hover{
   background-color: var(--mainColor);
 }
+
+nav{
+  width: 20%;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+iframe{
+  width: 100%;
+  height: calc(100vh - 50px);
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}

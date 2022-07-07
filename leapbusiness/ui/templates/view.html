@@ -5,9 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>View</h1>
-    <p>{{title}}</p>
+    <nav>
+        <h2><a href="/">Home</a></h2>
+        <h2><a href="/view">View</a></h2>
+    </nav>
+    <iframe title="LeapBusiness-alpha" src="https://app.powerbi.com/view?r=eyJrIjoiYmY0Zjk1YTAtZTQxYi00MjBlLWE5OTktNTZkMmVkMDViZWRjIiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9&pageName=ReportSection413faf261ab10d9ab505" frameborder="0" allowFullScreen="true"></iframe>
 </body>
 </html>
