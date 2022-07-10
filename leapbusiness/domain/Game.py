@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date
+from pickle import FALSE
 from statistics import mean, mode, pstdev
 from scipy.stats import t
 
@@ -20,6 +21,8 @@ class Game:
 
     TOTAL_GAMES = 0
     TOTAL_FALLOS = 0
+    INDEX = 0
+    FLAG_ERROR = FALSE
 
     # SteamSpy data
     appId: int
@@ -75,7 +78,7 @@ class Game:
                 self.upper_price = upper_price
             self.mean_price = mean_prices
 
-            self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price
+            self.total_sales = self.followers * 9.6 * 0.2
         
         else:
             

@@ -1,5 +1,8 @@
 from hashlib import new
 import json
+from multiprocessing.dummy import Array
+from operator import index
+from pickle import TRUE
 from re import A
 from statistics import mean
 import time
@@ -34,26 +37,40 @@ import psycopg2
 
 
 def main():
+    try:
+        start = time.time()
+        print("-------------------------------")
+        print("Main")
+        #update_steamSpy_list()
+        update_data()
+        end = time.time()
+        print("-------------------------------")
+        print('Total time elapsed: ')
+        print(start-end)
+        print("Total Juegos registrados: " + str(Game.TOTAL_GAMES))
+        print("Total Juegos Fallados: " + str(Game.TOTAL_FALLOS))
+    
+    except Exception as err:
+        print(err)
+        Game.FLAG_ERROR = True
+        update_data()
+        end = time.time()
+        print("-------------------------------")
+        print('Total time elapsed: ')
+        print(start-end)
+        print("Total Juegos registrados: " + str(Game.TOTAL_GAMES))
+        print("Total Juegos Fallados: " + str(Game.TOTAL_FALLOS))
 
-    start = time.time()
-    print("-------------------------------")
-    print("Main")
-    #update_steamSpy_list()
-    update_data()
-    end = time.time()
-    print("-------------------------------")
-    print('Total time elapsed: ')
-    print(start-end)
-    print("Total Juegos registrados: " + str(Game.TOTAL_GAMES))
-    print("Total Juegos Fallados: " + str(Game.TOTAL_FALLOS))
+    
+
     return True
+
 
 
 def update_steamSpy_list():
     print("-------------------------------")
     print("Updating List")
     url = 'https://steamspy.com/api.php?request=all&page='
-    list = []
     count = 0
     max_error_count = 10
     status_code = 200
@@ -96,14 +113,20 @@ def update_data():
     print("Updating Data")
     with open('appIdList.txt', 'r') as file:
         array = json.loads(file.read())
-    print('The first item of the List is ' + array[0])
 
-    for item in array:
-        result = update_game_data(item)
+    index=0
+    if(Game.FLAG_ERROR):
+        index = Game.INDEX
+
+    print('The first item of the List is ' + array[index])
+
+
+    for i in range(index,len(array)):
+        result = update_game_data(array[i])
         if (result):
-
             print('-----END PROCESS GAME------- \n')
-            print('Juegos registrados por el momendo:  ' + str(Game.TOTAL_GAMES))
+            Game.INDEX = Game.INDEX + 1
+            print('Juegos registrados por el momendo:  ' + str(Game.TOTAL_GAMES) + '\n')
 
     return True
 
