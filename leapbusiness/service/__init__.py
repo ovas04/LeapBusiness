@@ -1,6 +1,5 @@
 import json
 import time
-from domain.Data_Metacritic import DataMetacritic
 from .connect import get_connection
 from .Scrap_algorithm import Scrap_algorithm
 from .Api_request import steamAPI_data, steamSpy_data, steamSpy_list
