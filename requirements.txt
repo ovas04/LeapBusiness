@@ -5,4 +5,4 @@ lxml
 psycopg2
 pygresql
 Werkzeug
-gunicor
+gunicorn
