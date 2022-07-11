@@ -12,11 +12,14 @@ We will divide our app in below components, according to [Flask recommended layo
     │   ├── extensions.py
     │   ├── routes.py
     │   ├── controllers.py
+    │   ├── service/
+    │   ├── domain/
     │   │
     │   └── ui
     │       ├── static
     │       │   ├── css
     │       │   │   └── styles.css
+    │       │   ├── img
     │       │   └── js
     │       │       └── app.js
     │       └── templates

@@ -4,7 +4,14 @@ const request = (url) => {
   request.open("GET", url, true);
   request.send();
   request.onload = () => {
-    if(request.status){
+    if(parseInt(parseInt(request.status)/100) != 2){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong while updating the data',
+      })
+      document.querySelectorAll('button').forEach(e => e.removeAttribute('disabled'));
+    }else{
       document.querySelectorAll('button').forEach(e => e.removeAttribute('disabled'));
     }
   }
