@@ -1,6 +1,6 @@
 from flask import jsonify, render_template
 from .extensions import *
-from service import main
+from service import main, update_modular
 
 
 def index():
@@ -16,17 +16,21 @@ def full_Update():
     return jsonify(response='full update')
 
 
-def update_SteamCharts():
-    return jsonify(response='update SteamCharts')
-
-
-def update_SteamPrice():
-    return jsonify(response='update SteamPrice')
-
-
 def update_GameData():
+    update_modular(1)
     return jsonify(response='update Game Data')
 
 
 def update_Metacritic():
+    update_modular(2)
     return jsonify(response='update Metacritic')
+
+
+def update_SteamPrice():
+    update_modular(3)
+    return jsonify(response='update SteamPrice')
+
+
+def update_SteamCharts():
+    update_modular(4)
+    return jsonify(response='update SteamCharts')

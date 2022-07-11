@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from .utils import api_request
 from .Service_format import Service_format
 from .Scrap_algorithm import Scrap_algorithm
-from leapbusiness.domain.Data_Metacritic import DataMetacritic
+from domain.Data_Metacritic import DataMetacritic
 
 
 def steamSpy_data(appid):

@@ -19,7 +19,7 @@ class Game:
     TOTAL_GAMES = 0
     TOTAL_FALLOS = 0
     INDEX = 0
-    FLAG_ERROR = FALSE
+    FLAG_ERROR = False
 
     # SteamSpy data
     appId: int
@@ -39,11 +39,11 @@ class Game:
     genres: list[Genre]
     release_date: date  # format
     # DataMetacritic
-    metacritic: DataMetacritic
+    metacritic: DataMetacritic = DataMetacritic()
     # DataSteamPriceHistory
-    prices: list[DataSteamPriceHistory]
+    prices: list[DataSteamPriceHistory] = None
     # DataSteamCharts
-    players: list[DataSteamCharts]
+    players: list[DataSteamCharts] = None
     # Custom data or unmapped
     total_recommendations: int = field(init=False, default=None)
     lower_price: float = field(init=False, default=None)
@@ -74,10 +74,10 @@ class Game:
                 self.upper_price = upper_price
             self.mean_price = mean_prices
 
-            self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price
+            self.total_sales = self.followers * 9.6 * 0.2
 
         else:
             self.mean_price = Scrap_algorithm.get_mean_price_steamSpy(
                 self.appId)
             if(self.mean_price is not None):
-                self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price
+                self.total_sales = self.followers * 9.6 * 0.2
