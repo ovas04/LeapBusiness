@@ -18,6 +18,8 @@ class Game:
 
     TOTAL_GAMES = 0
     TOTAL_FALLOS = 0
+    INDEX = 0
+    FLAG_ERROR = FALSE
 
     # SteamSpy data
     appId: int
