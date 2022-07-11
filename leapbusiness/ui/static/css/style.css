@@ -41,17 +41,17 @@ body{
   margin: auto;
 }
 
-.page .content .left{
+.page .content .left, .page .content .right{
   width: 50%;
 }
 
-.page .content p{
-  width: 50%;
-  font-size: 16px;
+.page .content .right img{
+  margin: 0 5% ;
+  width: 90%;
 }
 
 .page .content h2{
-  font-size: 32px;
+  font-size: 2vw;
 }
 
 .page .content button{
@@ -59,10 +59,11 @@ body{
   color: var(--textColor);
   font-weight: bold;
   border: 2px solid var(--textColor);
-  border-radius: 50px;
+  border-radius: 2vw;
   padding: 16px 24px;
   margin: 8px auto;
   cursor: pointer;
+  font-size: 0.8vw;
 }
 
 .page .content button:hover{
@@ -103,17 +104,18 @@ nav div img{
 
 nav .buttons{
   width: 20%;
+  min-width: 230px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   color: var(--mainColor);
-  font-size: 14px;
+  font-size: 0.7vw;
 }
 
 nav .buttons h2{
   padding: 8px 32px;
-  border-radius: 20px;
+  border-radius: 4vw;
 }
 
 nav .buttons .active{
@@ -135,4 +137,75 @@ iframe{
 a{
   text-decoration: none;
   color: inherit;
+}
+
+@media only screen and (max-width: 1200px){
+  nav .buttons{
+    font-size: 1vw;
+  }
+
+  .page .content button{
+    font-size: 1.2vw;
+  }
+}
+
+@media only screen and (max-width: 992px){
+  .page .content{
+    flex-direction: column;
+  }
+  .page .content .left, .page .content .right{
+    width: 100%;
+  }
+  .page .content button{
+    font-size: 1.5vw;
+  }
+  .page .content h1{
+    font-size: 6vw;
+  }
+  .page .content h2{
+    font-size: 3vw;
+  }
+}
+
+@media only screen and (max-width: 600px){
+  .page .content{
+    padding: 30px;
+    height: calc(100vh - 160px);
+  }
+  nav .buttons{
+    font-size: 1.5vw;
+  }
+  .page .content button{
+    font-size: 2vw;
+  }
+  .page .content h1{
+    font-size: 8vw;
+  }
+  .page .content h2{
+    font-size: 4vw;
+  }
+}
+
+@media only screen and (max-width: 420px){
+  .page .content{
+    padding: 16px;
+    height: calc(100vh - 132px);
+  }
+  nav .buttons{
+    font-size: 1.5vw;
+    min-width: 180px;
+  }
+  .page .content button{
+    font-size: 3vw;
+  }
+  nav div img{
+    height: 40%;
+    margin-top: 30px;
+  }
+  .page .content h1{
+    font-size: 10vw;
+  }
+  .page .content h2{
+    font-size: 5vw;
+  }
 }
