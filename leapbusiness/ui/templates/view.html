@@ -5,12 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <nav>
-        <h2><a href="/">Home</a></h2>
-        <h2><a href="/view">View</a></h2>
+        <div class="logo">
+            <a href="/"><img src="{{ url_for('static', filename='img/leap.png') }}" alt="Leap Games Studios"></a>
+        </div>
+        <div class="buttons">
+            <h2><a href="/">Home</a></h2>
+            <h2 class="active"><a href="/view">View</a></h2>
+        </div>
     </nav>
     <iframe title="LeapBusiness-alpha" src="https://app.powerbi.com/view?r=eyJrIjoiYmY0Zjk1YTAtZTQxYi00MjBlLWE5OTktNTZkMmVkMDViZWRjIiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9&pageName=ReportSection413faf261ab10d9ab505" frameborder="0" allowFullScreen="true"></iframe>
 </body>

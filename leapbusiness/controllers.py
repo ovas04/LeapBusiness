@@ -1,26 +1,32 @@
-from multiprocessing import context
-from sre_constants import SUCCESS
 from flask import jsonify, render_template
 from .extensions import *
-from services import Videogame
 from service import main
 
 
 def index():
-    context = {"title": "Home"}
-    return render_template("index.html", **context)
+    return render_template("index.html")
 
 
 def view():
-
-    videogame = Videogame.Videogame("GTAV")
-
-    context = {"title": videogame.getVideogame()}
-    return render_template("view.html", **context)
+    return render_template("view.html")
 
 
-def start():
-    print("Start of process")
-    success = main()
-    status = "Realizando el web scrapping"
-    return jsonify(status=status)
+def full_Update():
+    main()
+    return jsonify(response='full update')
+
+
+def update_SteamCharts():
+    return jsonify(response='update SteamCharts')
+
+
+def update_SteamPrice():
+    return jsonify(response='update SteamPrice')
+
+
+def update_GameData():
+    return jsonify(response='update Game Data')
+
+
+def update_Metacritic():
+    return jsonify(response='update Metacritic')

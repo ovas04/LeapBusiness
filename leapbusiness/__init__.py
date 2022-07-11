@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask
 from .extensions import *
 from .routes import *
 
@@ -11,6 +11,6 @@ def create_app():
 
         app.register_blueprint(index_blueprint)
         app.register_blueprint(view_blueprint)
-        app.register_blueprint(start_blueprint)
+        app.register_blueprint(api_blueprint)
 
     return app

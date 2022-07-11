@@ -1,7 +1,7 @@
 :root{
   --bgColor: #343434;
   --textColor: #f9f8f9;
-  --mainColor: #48c0eb;
+  --mainColor: #DB0A5B;
   --placeholder: #696969;
   --backgroundImg: url("../../static/img/bg.jpeg");
 }
@@ -14,74 +14,122 @@ html{
 body{
   margin: 0;
   color: var(--textColor);
-  background-color: var(--bgColor);
   font-family: 'Source Sans Pro', sans-serif;
   word-break: break-word;
   position: relative;
 }
 
-.background, .overlay, .page{
+.page{
   position: absolute;
   width: 100%;
-  min-height: 100vh;
-}
-
-.background{
-  background-image: var(--backgroundImg);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
-}
-
-.overlay{
-  background-color: rgba(22, 22, 22, 0.5);
+  min-height: calc(100vh - 100px);
 }
 
 .page .content{
   position: relative;
   width: calc(100wh - 120px);
-  height: calc(100vh - 120px);
+  height: calc(100vh - 220px);
   padding: 60px;
-  text-align: center;
+  color: var(--bgColor);
+  display: flex;
+  flex-direction: row;
 }
 
 .page .content h1{
   font-size: 5vw;
+  color: var(--mainColor);
+  margin: auto;
+}
+
+.page .content .left{
+  width: 50%;
 }
 
 .page .content p{
-  width: 40%;
-  margin: auto;
+  width: 50%;
   font-size: 16px;
 }
 
+.page .content h2{
+  font-size: 32px;
+}
+
 .page .content button{
-  background-color: transparent;
-  color: inherit;
+  background-color: var(--mainColor);
+  color: var(--textColor);
   font-weight: bold;
   border: 2px solid var(--textColor);
   border-radius: 50px;
   padding: 16px 24px;
-  margin: 32px auto;
+  margin: 8px auto;
   cursor: pointer;
 }
 
 .page .content button:hover{
-  background-color: var(--mainColor);
+  color: var(--mainColor);
+  background: transparent;
+  border: 2px solid var(--mainColor);
+}
+
+.page .content button:disabled,
+.page .content button[disabled]{
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 nav{
-  width: 20%;
-  margin: auto;
+  position: relative;
+  width: 80%;
+  padding: 0 10%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  box-shadow: 1px 6px 10px -1px rgba(0,0,0,0.34);
+  -webkit-box-shadow: 1px 6px 10px -1px rgba(0,0,0,0.34);
+  -moz-box-shadow: 1px 6px 10px -1px rgba(0,0,0,0.34);
+  z-index: 20;
+  overflow: visible;
+}
+
+nav div{
+  height: 100px;
+}
+
+nav div img{
+  height: 60%;
+  margin-top: 20px;
+}
+
+nav .buttons{
+  width: 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--mainColor);
+  font-size: 14px;
+}
+
+nav .buttons h2{
+  padding: 8px 32px;
+  border-radius: 20px;
+}
+
+nav .buttons .active{
+  background-color: var(--mainColor);
+  color: var(--textColor);
+}
+
+nav .buttons h2:hover{
+  color: var(--mainColor);
+  background: transparent;
+  border: 2px solid var(--mainColor);
 }
 
 iframe{
   width: 100%;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 102px);
 }
 
 a{

@@ -1,10 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import date
-from statistics import mean, mode, pstdev
+from statistics import mean, pstdev
 from scipy.stats import t
-
 from service.Scrap_algorithm import Scrap_algorithm
-
 from .Tag import Tag
 from .Platform import Platform
 from .Category import Category
@@ -55,7 +53,6 @@ class Game:
         self.total_recommendations = self.positive + self.negative
 
         if(self.prices != None):
-
             array_prices = []
             for i in self.prices:
                 array_prices.append(i.price)
@@ -76,29 +73,9 @@ class Game:
             self.mean_price = mean_prices
 
             self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price
-        
+
         else:
-            
-            mean_price = Scrap_algorithm.get_mean_price_steamSpy(self.appId)
-
-            if(type(mean_price) != type(1.1)):
-                mean_price = None
-            else:
-
-                self.mean_price = mean_price
-
-                if(mean_price == 0):
-                    self.total_sales = None
-                else:
-                    self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price
-
-        
-        self.validations()
-
-
-    def validations(self):
-        #Validation Metacritic ---------------------------
-        if(self.metacritic == None):
-            self.metacritic = DataMetacritic(None, None, None)
-
-        
+            self.mean_price = Scrap_algorithm.get_mean_price_steamSpy(
+                self.appId)
+            if(self.mean_price is not None):
+                self.total_sales = self.followers * 9.6 * 0.2 * self.mean_price

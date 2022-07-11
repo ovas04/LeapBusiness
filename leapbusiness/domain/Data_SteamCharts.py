@@ -4,6 +4,6 @@ from datetime import date
 
 @dataclass(slots=True)
 class DataSteamCharts:
-    mounth: date  # review
+    mounth: date
     avg_players: float
     peak_players: float

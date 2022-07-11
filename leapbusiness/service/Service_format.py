@@ -1,4 +1,3 @@
-
 from datetime import date
 from domain.Tag import Tag
 from domain.Platform import Platform
@@ -14,44 +13,8 @@ months_f = {'January': "01", 'February': "02", 'March': "03", 'April': "04", 'Ma
 class Service_format:
 
     @staticmethod
-    def from_str_to_float(string):
-        return float(string)
-
-    @staticmethod
-    def from_str_to_int(string):
-        return int(string)
-
-    @staticmethod
-    def steam_charts_players_to_number(players_str):
-
-        players_float = float(players_str)
-
-        return players_float
-
-    @staticmethod
-    def metacritic_metaScore_to_number(metaScore_str):
-
-        metaScore_int = int(metaScore_str)
-
-        return metaScore_int
-
-    @staticmethod
-    def metacritic_userScore_to_number(userScore_str):
-
-        userScore_float = float(userScore_str)
-
-        return userScore_float
-
-    @staticmethod
-    def steam_price_format_float(price_str):
+    def steam_price_format(price_str):
         return float(price_str.replace("$", ""))
-
-    @staticmethod
-    def steam_spy_followers_to_number(followers_str):
-
-        followers_float = float(followers_str)
-
-        return followers_float
 
     @staticmethod
     def string_to_list(string: str):
