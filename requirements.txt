@@ -5,4 +5,11 @@ lxml
 psycopg2
 pygresql
 Werkzeug
+beautifulsoup4
+blueprint
+flask-restplus==0.13.0
+Flask-Uploads==0.2.1
+virtualenv==20.7.2
+virtualenv-clone==0.5.7
+urllib3==1.26.7
 gunicorn
