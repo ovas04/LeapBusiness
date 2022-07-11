@@ -73,7 +73,8 @@ def steamAPI_data(appid):
         print('- SteamAPI done')
 
         return steamAPI
-    except:
+    except Exception as err:
+        print(err)
         print('- SteamAPI data not found')
         return False
 
