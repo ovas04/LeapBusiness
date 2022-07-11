@@ -1,4 +1,5 @@
 import json
+from msilib.schema import Error
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 from .utils import api_request
@@ -73,7 +74,8 @@ def steamAPI_data(appid):
         print('- SteamAPI done')
 
         return steamAPI
-    except:
+    except Error as err:
+        print(err)
         print('- SteamAPI data not found')
         return False
 
