@@ -380,33 +380,46 @@ def update_steamPrice(list_appId, conn):
 
     my_cursor = conn.cursor()
 
+    TOTAL_FALTANTES = len(list_appId)
+
     for appId in list_appId:
+
+
         print("-------------------------------")
         steamHistory_data = get_steamPrice_data(appId[0])
 
         if(steamHistory_data is None):
             print("FALLO EN RECUPERAR DATOS DE : " + str(appId[0]))
-            continue
+            
 
         for price in steamHistory_data:
             my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
-                              (appId[0], price.date_price, price.price))
+                              appId[0], price.date_price, price.price)
 
             conn.commit()
 
-            game = Game(appId=appId[0], prices=steamHistory_data)
 
-            my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
-                              (appId[0], game.lower_price, game.mean_price, game.upper_price))
 
-            conn.commit()
+        game = Game(appId=appId[0], name=None, publisher=None, positive=0, negative=0, languages=None, tags=None,  followers=0, required_age=None, is_free=None, platforms=None, url=None, categories=None, genres=None, release_date=None, prices=steamHistory_data)            
 
-            TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+        my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
+                              (game.appId, game.lower_price, game.mean_price, game.upper_price))
 
-            print('- Game ' + str(appId[0]) + ' updated')
+        conn.commit()
+
+        TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
+        TOTAL_FALTANTES = TOTAL_FALTANTES - 1
+
+        print('- Game ' + str(appId[0]) + ' updated')
+        print('- Game total faltantes :' + TOTAL_FALTANTES)
+        
 
         print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " +
               str(TOTAL_GAMES_UPDATED))
+
+    my_cursor.execute("CALL leapbusiness.sp_validation_prices()")
+
+    conn.commit()
 
 
 def update_steamCharts(list_appId, conn):
