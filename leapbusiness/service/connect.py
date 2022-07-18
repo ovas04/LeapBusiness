@@ -14,3 +14,19 @@ def get_connection():
         user=username,
         password=pwd,
         port=port_id)
+
+
+
+def get_connection_local():
+    hostname = 'localhost'
+    database = 'db_leapbusiness'
+    username = 'postgres'
+    pwd = 'Idranoide11'
+    port_id = 5432
+
+    return psycopg2.connect(
+        host=hostname,
+        dbname=database,
+        user=username,
+        password=pwd,
+        port=port_id)

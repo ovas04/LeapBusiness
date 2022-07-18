@@ -1,3 +1,4 @@
+from datetime import date
 import json
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
@@ -109,7 +110,7 @@ def steamSpy_list():
     print('No response from page ' + str(count))
 
     if (list != []):
-        with open('appIdList.txt', 'w') as file:
+        with open('appIdList-'+str(date.today)+'.txt', 'w') as file:
             json.dump(list, file)
             print('Updated list')
         return True
