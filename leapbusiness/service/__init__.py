@@ -96,7 +96,7 @@ def update_game_data(appid):
                      is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14], metacritic=game[15], players=game[16], prices=game[17])
 
     print(gameClass)
-    # update_database(gameClass)
+    update_database(gameClass)
     return True
 
 
