@@ -42,41 +42,34 @@ def steamAPI_data(appid):
     url = 'https://store.steampowered.com/api/appdetails/get?appids=' + \
         str(appid)
 
-    try:
-        data = api_request(url)
-        data = data.get(str(appid)).get('data')
-
-        if(data.get('categories') == '' or data.get('categories') == None or data.get('genres') == '' or data.get('genres') == None):
-            print('Incomplete SteamAPI data')
-            return False
-
-        steamAPI = []
-        steamAPI.append(data.get('required_age'))
-        steamAPI.append(data.get('is_free'))
-        steamAPI.append(Service_format.format_Platforms(
-            data.get('platforms')))
-        if(data.get('metacritic')):
-            steamAPI.append(data.get('metacritic').get('url'))
-        else:
-            steamAPI.append(data.get('metacritic'))
-        steamAPI.append(Service_format.format_Categories(
-            data.get('categories')))
-        steamAPI.append(Service_format.format_Genres(data.get('genres')))
-        steamAPI.append(Service_format.format_date_SteamAPI(
-            data.get('release_date').get('date')))
-        if(data.get('metacritic')):
-            steamAPI.append(Scrap_algorithm.scrap_metacritic(
-                data.get('metacritic').get('url')))
-        else:
-            steamAPI.append(DataMetacritic())
-            print('- Metacritic data not found')
-
-        print('- SteamAPI done')
-
-        return steamAPI
-    except:
-        print('- SteamAPI data not found')
+    
+    data = api_request(url)
+    data = data.get(str(appid)).get('data')
+    if(data.get('categories') == '' or data.get('categories') == None or data.get('genres') == '' or data.get('genres') == None):
+        print('Incomplete SteamAPI data')
         return False
+    steamAPI = []
+    steamAPI.append(data.get('required_age'))
+    steamAPI.append(data.get('is_free'))
+    steamAPI.append(Service_format.format_Platforms(
+        data.get('platforms')))
+    if(data.get('metacritic')):
+        steamAPI.append(data.get('metacritic').get('url'))
+    else:
+        steamAPI.append(data.get('metacritic'))
+    steamAPI.append(Service_format.format_Categories(
+        data.get('categories')))
+    steamAPI.append(Service_format.format_Genres(data.get('genres')))
+    steamAPI.append(Service_format.format_date_SteamAPI(
+        data.get('release_date').get('date')))
+    if(data.get('metacritic')):
+        steamAPI.append(Scrap_algorithm.scrap_metacritic(
+            data.get('metacritic').get('url')))
+    else:
+        steamAPI.append(DataMetacritic())
+        print('- Metacritic data not found')
+    print('- SteamAPI done')
+    return steamAPI
 
 
 def steamSpy_list():
