@@ -220,8 +220,8 @@ def register_game_db(game):
     Game.TOTAL_GAMES = Game.TOTAL_GAMES + 1
     print("Registered in database")
 
-    my_cursor.execute("CALL leapbusiness.sp_validation_prices(%s)",(int(game.appId)))
-    my_cursor.execute("CALL leapbusiness.sp_anex_recommendations(%s)",(int(game.appId)))
+    my_cursor.execute("CALL leapbusiness.sp_validation_prices(%s)",(game.appId,))
+    my_cursor.execute("CALL leapbusiness.sp_anex_recommendations(%s)",(game.appId,))
 
     conn.close()
 
