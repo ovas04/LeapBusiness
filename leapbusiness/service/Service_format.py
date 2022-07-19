@@ -56,10 +56,22 @@ class Service_format:
 
     @staticmethod
     def format_date_SteamAPI(date_r):
+        words = date_r.split(" ")
 
-        day = date_r.split(" ")[0]
-        month = months[date_r.split(" ")[1].replace(",", "")]
-        year = date_r.split(" ")[2]
+        day = 0
+        month = 0
+        year = 0
+
+        for word in words:
+            word = word.replace(",", "")
+            try:
+                word = int(word)
+                if(word > 2000):
+                    year = word
+                else:
+                    day = word
+            except:
+                month = months[word]
 
         dateFormat = date(int(year), int(month), int(day))
 
