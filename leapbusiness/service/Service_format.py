@@ -71,12 +71,7 @@ class Service_format:
                     day = word
             except:
                 month = months[word]
-<<<<<<< HEAD
-         
-        
-=======
 
->>>>>>> 79e9081346914dedebf350ecbded7bc58314f0a9
         dateFormat = date(int(year), int(month), int(day))
         
         return dateFormat
