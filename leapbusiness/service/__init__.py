@@ -327,7 +327,7 @@ def update_game(list_appId, conn):
         gameClass = Game(appId=game[0], name=game[1], publisher=game[2], positive=game[3], negative=game[4], languages=game[5], tags=game[6], followers=game[7],
                          required_age=game[8], is_free=game[9], platforms=game[10], url=game[11], categories=game[12], genres=game[13], release_date=game[14])
 
-        if(gameClass.is_free == False and gameClass.followers > 1000 and gameClass.mean_price > 0):
+        if(gameClass.is_free == False and gameClass.followers > 1000 and gameClass.mean_price is not None and gameClass.mean_price > 0):
             my_cursor.execute("CALL leapbusiness.sp_update_videogame(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                               (int(gameClass.appId), str(gameClass.name), gameClass.total_recommendations, str(gameClass.required_age), bool(gameClass.is_free), gameClass.followers, gameClass.url, gameClass.release_date, gameClass.total_sales))
 
