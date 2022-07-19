@@ -223,6 +223,8 @@ def register_game_db(game):
     my_cursor.execute("CALL leapbusiness.sp_validation_prices(%s)",(game.appId,))
     my_cursor.execute("CALL leapbusiness.sp_anex_recommendations(%s)",(game.appId,))
 
+    conn.commit()
+
     conn.close()
 
 
