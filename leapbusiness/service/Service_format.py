@@ -57,9 +57,8 @@ class Service_format:
     @staticmethod
     def format_date_SteamAPI(date_r):
 
-        print(date_r)
-        day = date_r.split(" ")[1].replace(",", "")
-        month = months[date_r.split(" ")[0]]
+        day = date_r.split(" ")[0]
+        month = months[date_r.split(" ")[1].replace(",", "")]
         year = date_r.split(" ")[2]
 
         dateFormat = date(int(year), int(month), int(day))
