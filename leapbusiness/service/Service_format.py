@@ -57,14 +57,10 @@ class Service_format:
     @staticmethod
     def format_date_SteamAPI(date_r):
         words = date_r.split(" ")
-<<<<<<< HEAD
-=======
-
         day = 0
         month = 0
         year = 0
 
->>>>>>> 79e9081346914dedebf350ecbded7bc58314f0a9
         for word in words:
             word = word.replace(",", "")
             try:
