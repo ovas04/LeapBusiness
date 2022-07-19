@@ -220,8 +220,10 @@ def register_game_db(game):
     Game.TOTAL_GAMES = Game.TOTAL_GAMES + 1
     print("Registered in database")
 
-    my_cursor.execute("CALL leapbusiness.sp_validation_prices(%s)",(game.appId,))
-    my_cursor.execute("CALL leapbusiness.sp_anex_recommendations(%s)",(game.appId,))
+    my_cursor.execute(
+        "CALL leapbusiness.sp_validation_prices(%s)", (game.appId,))
+    my_cursor.execute(
+        "CALL leapbusiness.sp_anex_recommendations(%s)", (game.appId,))
 
     conn.commit()
 
@@ -334,6 +336,8 @@ def update_game(list_appId, conn):
             print('- Game ' + str(appId[0]) + ' updated')
 
             conn.commit()
+        if(TOTAL_GAMES_UPDATED == 100):
+            return True
 
     print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " +
           str(TOTAL_GAMES_UPDATED))
@@ -371,6 +375,9 @@ def update_metacritic(list_appId, conn):
 
             conn.commit()
 
+        if(TOTAL_GAMES_UPDATED == 100):
+            return True
+
     print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " +
           str(TOTAL_GAMES_UPDATED))
 
@@ -384,33 +391,30 @@ def update_steamPrice(list_appId, conn):
 
     TOTAL_FALTANTES = len(list_appId)
 
-
     for appId in list_appId:
 
         TOTAL_FALTANTES = TOTAL_FALTANTES - 1
 
-        
         print("-------------------------------")
         steamHistory_data = get_steamPrice_data(appId[0])
 
         if(steamHistory_data is None):
-                
+
             print("FALLO EN RECUPERAR DATOS DE : " + str(appId[0]))
-                
-                
+
         else:
 
             for price in steamHistory_data:
-                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)", (appId[0], price.date_price, price.price))
+                my_cursor.execute("CALL leapbusiness.sp_register_prices(%s,%s,%s)",
+                                  (appId[0], price.date_price, price.price))
 
                 conn.commit()
 
-
-
-        game = Game(appId=appId[0], name=None, publisher=None, positive=0, negative=0, languages=None, tags=None,  followers=0, required_age=None, is_free=None, platforms=None, url=None, categories=None, genres=None, release_date=None, prices=steamHistory_data)            
+        game = Game(appId=appId[0], name=None, publisher=None, positive=0, negative=0, languages=None, tags=None,  followers=0,
+                    required_age=None, is_free=None, platforms=None, url=None, categories=None, genres=None, release_date=None, prices=steamHistory_data)
 
         my_cursor.execute("CALL leapbusiness.sp_update_price_videogame(%s,%s,%s,%s)",
-                                (game.appId, game.lower_price, game.mean_price, game.upper_price))
+                          (game.appId, game.lower_price, game.mean_price, game.upper_price))
 
         conn.commit()
 
@@ -419,11 +423,12 @@ def update_steamPrice(list_appId, conn):
 
         print('- Game ' + str(appId[0]) + ' updated')
         print('- Game total faltantes :' + str(TOTAL_FALTANTES))
-            
 
         print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " +
-                str(TOTAL_GAMES_UPDATED))
+              str(TOTAL_GAMES_UPDATED))
 
+        if(TOTAL_GAMES_UPDATED == 100):
+            return True
 
     my_cursor.execute("CALL leapbusiness.sp_validation_prices()")
 
@@ -436,7 +441,6 @@ def update_steamCharts(list_appId, conn):
     print('Steam Charts')
 
     my_cursor = conn.cursor()
-
 
     for appId in list_appId:
         print("-------------------------------")
@@ -454,7 +458,11 @@ def update_steamCharts(list_appId, conn):
 
             TOTAL_GAMES_UPDATED = TOTAL_GAMES_UPDATED + 1
 
-            print('- Game ' + str(appId[0]) + ' updated, date : ' + str(players_data.mounth))
+            print('- Game ' + str(appId[0]) +
+                  ' updated, date : ' + str(players_data.mounth))
+
+            if(TOTAL_GAMES_UPDATED == 100):
+                return True
 
     print("ACTUALIZACON COMPLETA -- TOTAL_GAMES_UPDATED = " +
           str(TOTAL_GAMES_UPDATED))
