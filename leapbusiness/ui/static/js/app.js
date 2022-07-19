@@ -1,5 +1,6 @@
 const request = (url) => {
   document.querySelectorAll('button').forEach(e => e.setAttribute('disabled', '')) ;
+  document.getElementById('status').innerText = 'In progress';
   const request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   request.open("GET", url, true);
   request.send();
@@ -11,8 +12,10 @@ const request = (url) => {
         text: 'Something went wrong while updating the data',
       })
       document.querySelectorAll('button').forEach(e => e.removeAttribute('disabled'));
+      document.getElementById('status').innerText = '';
     }else{
       document.querySelectorAll('button').forEach(e => e.removeAttribute('disabled'));
+      document.getElementById('status').innerText = '';
     }
   }
 }
